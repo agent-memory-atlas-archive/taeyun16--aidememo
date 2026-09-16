@@ -16,12 +16,6 @@ members = [
     "crates/aidememo-ffi",
     "crates/aidememo-nif",
 ]
-exclude = [
-    # Local fork of tokenizers; consumed via [patch.crates-io] below.
-    # Keep it out of our workspace because it's an independent crate
-    # with its own edition/lints we don't want to override.
-    "vendor/tokenizers",
-]
 # Native addon / Python extension crates are now part of the workspace build.
 
 [workspace.package]
@@ -64,13 +58,3 @@ debug = "full"
 strip = false
 lto = false        # full LTO inlines through allocations and confuses dhat
 codegen-units = 16
-
-# Local fork of tokenizers 0.22.2 for the optional fastembed provider, with two
-# allocation-focused fixes. The default Model2Vec path uses tokenizers 0.21.4.
-#  - models/unigram/model.rs: pre-size the token map from vocab.len()
-#  - models/unigram/trie.rs: replace per-node AHashMap children with packed Vecs
-# `vendor/tokenizers` is a repo-root symlink to the Python package's vendored
-# copy. That keeps the Cargo patch path stable while letting maturin include
-# the same build sources in the Python sdist as `vendor/tokenizers`.
-[patch.crates-io]
-tokenizers = { path = "vendor/tokenizers" }
